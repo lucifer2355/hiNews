@@ -3,8 +3,8 @@ import { StyleSheet, View, Image, TouchableHighlight } from 'react-native';
 
 // import Voice
 import Voice from '@react-native-community/voice';
-import Screen from './Screen';
 import colors from '../config/colors';
+import AppText from './AppText';
 
 const VoiceCom = () => {
   const [pitch, setPitch] = useState('');
@@ -13,6 +13,7 @@ const VoiceCom = () => {
   const [started, setStarted] = useState('');
   const [results, setResults] = useState([]);
   const [partialResults, setPartialResults] = useState([]);
+  const [endSpeech, setEndSpeech] = useState(true);
 
   useEffect(() => {
     //Setting callbacks for the process status
@@ -67,16 +68,22 @@ const VoiceCom = () => {
 
   const startRecognizing = async () => {
     //Starts listening for speech for a specific locale
-    try {
-      await Voice.start('en-US');
-      setPitch('');
-      setError('');
-      setStarted('');
-      setResults([]);
-      setPartialResults([]);
-      setEnd('');
-    } catch (e) {
-      console.error(e);
+
+    if (!endSpeech) {
+      try {
+        await Voice.start('en-US');
+        setPitch('');
+        setError('');
+        setStarted('');
+        setResults([]);
+        setPartialResults([]);
+        setEnd('');
+      } catch (e) {
+        console.error(e);
+      }
+    } else {
+      Voice.cancel();
+      setEndSpeech(!endSpeech);
     }
   };
 
@@ -114,15 +121,24 @@ const VoiceCom = () => {
   };
 
   return (
-    <TouchableHighlight style={styles.container} onPress={startRecognizing}>
-      <Image
-        style={styles.imageButton}
-        source={{
-          uri:
-            'https://raw.githubusercontent.com/AboutReact/sampleresource/master/microphone.png',
-        }}
-      />
-    </TouchableHighlight>
+    <View style={styles.container}>
+      {partialResults.length !== 0 && (
+        <View style={styles.voiceCommandView}>
+          <AppText style={styles.voiceCommandText}>
+            {partialResults.toString()}
+          </AppText>
+        </View>
+      )}
+      <TouchableHighlight style={styles.voiceBtn} onPress={startRecognizing}>
+        <Image
+          style={styles.imageButton}
+          source={{
+            uri:
+              'https://raw.githubusercontent.com/AboutReact/sampleresource/master/microphone.png',
+          }}
+        />
+      </TouchableHighlight>
+    </View>
   );
 };
 
@@ -130,6 +146,25 @@ export default VoiceCom;
 
 const styles = StyleSheet.create({
   container: {
+    flexDirection: 'row',
+  },
+
+  voiceCommandView: {
+    paddingHorizontal: 2,
+    paddingVertical: 10,
+    backgroundColor: colors.white,
+    marginRight: 10,
+    borderRadius: 30,
+    alignSelf: 'center',
+  },
+
+  voiceCommandText: {
+    color: colors.dark,
+    textAlign: 'center',
+    width: 170,
+  },
+
+  voiceBtn: {
     backgroundColor: colors.white,
     padding: 10,
     borderRadius: 50,

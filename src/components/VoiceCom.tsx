@@ -68,6 +68,8 @@ const VoiceCom = () => {
 
   const startRecognizing = async () => {
     //Starts listening for speech for a specific locale
+    setEndSpeech(!endSpeech);
+    console.log(endSpeech);
 
     if (!endSpeech) {
       try {
@@ -83,7 +85,9 @@ const VoiceCom = () => {
       }
     } else {
       Voice.cancel();
-      setEndSpeech(!endSpeech);
+      setTimeout(() => {
+        setEndSpeech(!endSpeech);
+      }, 500);
     }
   };
 

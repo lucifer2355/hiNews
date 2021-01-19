@@ -2,8 +2,8 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Text, View, StyleSheet} from 'react-native';
-import {requireNativeComponent} from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { requireNativeComponent } from 'react-native';
 
 const styles = StyleSheet.create({
   textView: {
@@ -50,14 +50,14 @@ class AlanText extends React.Component {
   }
 }
 
-AlanText.propTypes = {
-};
+AlanText.propTypes = {};
 
 var RNTAlanText = requireNativeComponent('RNTAlanText', AlanText);
 
 class AlanView extends React.Component {
   render() {
-    return <View style={styles.bottomView}>
+    return (
+      <View style={styles.bottomView}>
         <AlanText style={styles.textView} />
         <AlanButton
           style={styles.buttonView}
@@ -68,7 +68,8 @@ class AlanView extends React.Component {
             '1.0.6',
           ]}
         />
-      </View>;
+      </View>
+    );
   }
 }
 

@@ -1,5 +1,14 @@
 import React from 'react';
-import { StyleSheet, View, FlatList, Platform, Dimensions } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  FlatList,
+  Platform,
+  Dimensions,
+  Image,
+} from 'react-native';
+import DateSource from '../components/DateSourse';
+import AppText from '../components/AppText';
 
 const { width, height } = Dimensions.get('window');
 const SPACING = 10;
@@ -115,10 +124,79 @@ const NewsListingScreen = () => {
       contentContainerStyle={{ alignItems: 'center' }}
       snapToInterval={ITEM_SIZE}
       snapToAlignment="start"
+      renderItem={({ item, index }) => {
+        if (!item.urlToImage) {
+          return <View style={{ width: EMPTY_ITEM_SIZE }} />;
+        }
+
+        const inputRange = [
+          (index - 2) * ITEM_SIZE,
+          (index - 1) * ITEM_SIZE,
+          index * ITEM_SIZE,
+        ];
+
+        // const translateY = scrollX.interpolate({
+        //   inputRange,
+        //   outputRange: [100, 50, 100],
+        //   extrapolate: 'clamp',
+        // });
+
+        return (
+          <View style={{ width: ITEM_SIZE }}>
+            <View style={styles.newsCardView}>
+              <Image
+                source={{ uri: item.urlToImage }}
+                style={styles.posterImage}
+              />
+              <AppText style={{ fontSize: 24 }} numberOfLines={1}>
+                {item.title}
+              </AppText>
+
+              <DateSource dateSourses={[item.publishedAt, item.source.name]} />
+              <AppText style={{ fontSize: 12 }} numberOfLines={3}>
+                {item.description}
+              </AppText>
+            </View>
+          </View>
+        );
+      }}
     />
   );
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  container: {
+    flex: 1,
+  },
+
+  newsCardView: {
+    marginHorizontal: SPACING,
+    padding: SPACING * 2,
+    alignItems: 'center',
+    // transform: [{ translateY }],
+    backgroundColor: 'white',
+    borderRadius: 34,
+  },
+
+  paragraph: {
+    margin: 24,
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  posterImage: {
+    width: '100%',
+    height: ITEM_SIZE * 1.2,
+    resizeMode: 'cover',
+    borderRadius: 24,
+    margin: 0,
+    marginBottom: 10,
+  },
+});
 
 export default NewsListingScreen;

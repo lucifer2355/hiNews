@@ -6,9 +6,11 @@ import {
   Platform,
   Dimensions,
   Image,
+  Animated,
 } from 'react-native';
 import DateSource from '../components/DateSourse';
 import AppText from '../components/AppText';
+import colors from '../config/colors';
 
 const { width, height } = Dimensions.get('window');
 const SPACING = 10;
@@ -112,13 +114,20 @@ const data = [
 ];
 
 const NewsListingScreen = () => {
+  const scrollX = React.useRef(new Animated.Value(0)).current;
+
   return (
-    <FlatList
+    <Animated.FlatList
       showsHorizontalScrollIndicator={false}
       data={data}
       keyExtractor={(item) => item.id.toString()}
       horizontal
       bounces={false}
+      onScroll={Animated.event(
+        [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+        { useNativeDriver: true }
+      )}
+      scrollEventThrottle={16}
       decelerationRate={Platform.OS === 'ios' ? 0 : 0.98}
       renderToHardwareTextureAndroid
       contentContainerStyle={{ alignItems: 'center' }}
@@ -130,33 +139,40 @@ const NewsListingScreen = () => {
         }
 
         const inputRange = [
-          (index - 2) * ITEM_SIZE,
           (index - 1) * ITEM_SIZE,
           index * ITEM_SIZE,
+          (index + 1) * ITEM_SIZE,
         ];
 
-        // const translateY = scrollX.interpolate({
-        //   inputRange,
-        //   outputRange: [100, 50, 100],
-        //   extrapolate: 'clamp',
-        // });
+        const translateY = scrollX.interpolate({
+          inputRange,
+          outputRange: [0, -50, 0],
+        });
 
         return (
           <View style={{ width: ITEM_SIZE }}>
-            <View style={styles.newsCardView}>
+            <Animated.View
+              style={[styles.newsCardView, { transform: [{ translateY }] }]}
+            >
               <Image
                 source={{ uri: item.urlToImage }}
                 style={styles.posterImage}
               />
-              <AppText style={{ fontSize: 24 }} numberOfLines={1}>
+              <AppText
+                style={{ fontSize: 24, color: colors.dark }}
+                numberOfLines={1}
+              >
                 {item.title}
               </AppText>
 
               <DateSource dateSourses={[item.publishedAt, item.source.name]} />
-              <AppText style={{ fontSize: 12 }} numberOfLines={3}>
+              <AppText
+                style={{ fontSize: 12, color: colors.dark }}
+                numberOfLines={3}
+              >
                 {item.description}
               </AppText>
-            </View>
+            </Animated.View>
           </View>
         );
       }}
@@ -178,7 +194,6 @@ const styles = StyleSheet.create({
     marginHorizontal: SPACING,
     padding: SPACING * 2,
     alignItems: 'center',
-    // transform: [{ translateY }],
     backgroundColor: 'white',
     borderRadius: 34,
   },

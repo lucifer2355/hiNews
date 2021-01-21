@@ -12,6 +12,8 @@ target 'alanNews' do
 
   pod 'react-native-voice', :path => '../node_modules/@react-native-community/voice'
 
+  pod 'RNSVG', :path => '../node_modules/react-native-svg'
+
   target 'alanNewsTests' do
     inherit! :complete
     # Pods for testing

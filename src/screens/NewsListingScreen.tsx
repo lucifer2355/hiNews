@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -8,6 +8,10 @@ import {
   Image,
   Animated,
 } from 'react-native';
+import MaskedView from '@react-native-community/masked-view';
+import Svg, { Rect } from 'react-native-svg';
+import { LinearGradient } from 'react-native-linear-gradient';
+
 import DateSource from '../components/DateSourse';
 import AppText from '../components/AppText';
 import colors from '../config/colors';
@@ -114,12 +118,25 @@ const data = [
 ];
 
 const NewsListingScreen = () => {
+  const [newsData, setNewsData] = useState([
+    {
+      id: 'left-spacer',
+      urlToImage: '',
+      title: '',
+      publishedAt: '',
+      source: { name: '' },
+      description: '',
+    },
+    ...data,
+    { id: 'right-spacer' },
+  ]);
+
   const scrollX = React.useRef(new Animated.Value(0)).current;
 
   return (
     <Animated.FlatList
       showsHorizontalScrollIndicator={false}
-      data={data}
+      data={newsData}
       keyExtractor={(item) => item.id.toString()}
       horizontal
       bounces={false}
@@ -139,9 +156,9 @@ const NewsListingScreen = () => {
         }
 
         const inputRange = [
+          (index - 2) * ITEM_SIZE,
           (index - 1) * ITEM_SIZE,
           index * ITEM_SIZE,
-          (index + 1) * ITEM_SIZE,
         ];
 
         const translateY = scrollX.interpolate({

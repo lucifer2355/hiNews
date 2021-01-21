@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from 'react';
 import {
   StatusBar,
@@ -9,9 +10,6 @@ import {
   Image,
   Animated,
 } from 'react-native';
-import MaskedView from '@react-native-community/masked-view';
-import Svg, { Rect } from 'react-native-svg';
-import { LinearGradient } from 'react-native-linear-gradient';
 
 import DateSource from '../components/DateSourse';
 import AppText from '../components/AppText';
@@ -22,7 +20,6 @@ const { width, height } = Dimensions.get('window');
 const SPACING = 10;
 const ITEM_SIZE = Platform.OS === 'ios' ? width * 0.72 : width * 0.74;
 const EMPTY_ITEM_SIZE = (width - ITEM_SIZE) / 2;
-const BACKDROP_HEIGHT = height * 0.65;
 
 const data = [
   {
@@ -132,7 +129,6 @@ const NewsListingScreen = () => {
     ...data,
     { id: 'right-spacer' },
   ]);
-
   const scrollX = React.useRef(new Animated.Value(0)).current;
 
   return (

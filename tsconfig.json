@@ -11,6 +11,7 @@
       "strict": true,
       "target": "esnext",
       "resolveJsonModule": true,
+      "strictNullChecks": false
       
     },
     "exclude": [

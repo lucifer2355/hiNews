@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  StatusBar,
   StyleSheet,
   View,
   FlatList,
@@ -15,6 +16,7 @@ import { LinearGradient } from 'react-native-linear-gradient';
 import DateSource from '../components/DateSourse';
 import AppText from '../components/AppText';
 import colors from '../config/colors';
+import Backdrop from '../components/Backdrop';
 
 const { width, height } = Dimensions.get('window');
 const SPACING = 10;
@@ -134,66 +136,74 @@ const NewsListingScreen = () => {
   const scrollX = React.useRef(new Animated.Value(0)).current;
 
   return (
-    <Animated.FlatList
-      showsHorizontalScrollIndicator={false}
-      data={newsData}
-      keyExtractor={(item) => item.id.toString()}
-      horizontal
-      bounces={false}
-      onScroll={Animated.event(
-        [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-        { useNativeDriver: true }
-      )}
-      scrollEventThrottle={16}
-      decelerationRate={Platform.OS === 'ios' ? 0 : 0.98}
-      renderToHardwareTextureAndroid
-      contentContainerStyle={{ alignItems: 'center' }}
-      snapToInterval={ITEM_SIZE}
-      snapToAlignment="start"
-      renderItem={({ item, index }) => {
-        if (!item.urlToImage) {
-          return <View style={{ width: EMPTY_ITEM_SIZE }} />;
-        }
+    <>
+      <StatusBar hidden />
 
-        const inputRange = [
-          (index - 2) * ITEM_SIZE,
-          (index - 1) * ITEM_SIZE,
-          index * ITEM_SIZE,
-        ];
+      <Backdrop newsData={newsData} scrollX={scrollX} />
 
-        const translateY = scrollX.interpolate({
-          inputRange,
-          outputRange: [0, -50, 0],
-        });
+      <Animated.FlatList
+        showsHorizontalScrollIndicator={false}
+        data={newsData}
+        keyExtractor={(item) => item.id.toString()}
+        horizontal
+        bounces={false}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+          { useNativeDriver: true }
+        )}
+        scrollEventThrottle={16}
+        decelerationRate={Platform.OS === 'ios' ? 0 : 0.98}
+        renderToHardwareTextureAndroid
+        contentContainerStyle={{ alignItems: 'center' }}
+        snapToInterval={ITEM_SIZE}
+        snapToAlignment="start"
+        renderItem={({ item, index }) => {
+          if (!item.urlToImage) {
+            return <View style={{ width: EMPTY_ITEM_SIZE }} />;
+          }
 
-        return (
-          <View style={{ width: ITEM_SIZE }}>
-            <Animated.View
-              style={[styles.newsCardView, { transform: [{ translateY }] }]}
-            >
-              <Image
-                source={{ uri: item.urlToImage }}
-                style={styles.posterImage}
-              />
-              <AppText
-                style={{ fontSize: 24, color: colors.dark }}
-                numberOfLines={1}
+          const inputRange = [
+            (index - 2) * ITEM_SIZE,
+            (index - 1) * ITEM_SIZE,
+            index * ITEM_SIZE,
+          ];
+
+          const translateY = scrollX.interpolate({
+            inputRange,
+            outputRange: [0, -50, 0],
+          });
+
+          return (
+            <View style={{ width: ITEM_SIZE }}>
+              <Animated.View
+                style={[styles.newsCardView, { transform: [{ translateY }] }]}
               >
-                {item.title}
-              </AppText>
+                <Image
+                  source={{ uri: item.urlToImage }}
+                  style={styles.posterImage}
+                />
+                <AppText
+                  style={{ fontSize: 24, color: colors.dark }}
+                  numberOfLines={1}
+                >
+                  {item.title}
+                </AppText>
 
-              <DateSource dateSourses={[item.publishedAt, item.source.name]} />
-              <AppText
-                style={{ fontSize: 12, color: colors.dark }}
-                numberOfLines={3}
-              >
-                {item.description}
-              </AppText>
-            </Animated.View>
-          </View>
-        );
-      }}
-    />
+                <DateSource
+                  dateSourses={[item.publishedAt, item.source.name]}
+                />
+                <AppText
+                  style={{ fontSize: 12, color: colors.dark }}
+                  numberOfLines={3}
+                >
+                  {item.description}
+                </AppText>
+              </Animated.View>
+            </View>
+          );
+        }}
+      />
+    </>
   );
 };
 
